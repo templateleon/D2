@@ -1,0 +1,96 @@
+﻿# После нового открытия проекта активируем окружение:
+PS C:\Users\Admin\PycharmProjects\pythonProject17(jango_ORM)> venv\scripts\activate
+(venv) PS C:\Users\Admin\PycharmProjects\pythonProject17(jango_ORM)>
+
+# Заходим в shell:
+(venv) PS C:\Users\Admin\PycharmProjects\pythonProject17(jango_ORM)> cd NewsPaper
+(venv) PS C:\Users\Admin\PycharmProjects\pythonProject17(jango_ORM)\NewsPaper> python manage.py shell
+Python 3.8.10 (tags/v3.8.10:3d8993a, May  3 2021, 11:34:34) [MSC v.1928 32 bit (Intel)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+(InteractiveConsole)
+>>>
+
+# Импортируем всё:
+>>> from news.models import *
+
+
+# Создаем первого пользователя:
+>>> user1=User.objects.create(username='Mike', first_name='Frank')
+
+# Создаем пкрвого Автора со связанным пользователем:
+>>> Author.objects.create(authorUser=user1)
+
+# Создаем второго пользователя:
+>>> user2=User.objects.create(username='Sergo', first_name='Pavlovih')
+
+# Создаем второго Автора со связанным пользователем:
+>>> Author.objects.create(authorUser=user2)
+
+# Создаем категории:
+>>> Category.obgects.create(name='IT')
+>>> Category.obgects.create(name='Education')
+
+# Создаем посты:
+>>> Post.objects.create(author=Author.objects.get(autorUser=User.objects.get(username='Mike')), categoryType='NW', title='smth title', text='smth text')
+>>> Post.objects.create(author=Author.objects.get(autorUser=User.objects.get(username='Mike')), categoryType='AR', title='smth333 title', text='smth333 text')
+>>> Post.objects.create(author=Author.objects.get(autorUser=User.objects.get(username='Sergo')), categoryType='AR', title='smth555 title', text='smth555 text')
+
+# Получаем посты:
+>>> p1=Post.objects.get(pk=1)
+>>> p2=Post.objects.get(pk=2)
+>>> p3=Post.objects.get(pk=3)
+
+# Получаем категории:
+>>> c1=Category.objects.get(name='IT')
+>>> c2=Category.objects.get(name='Education')
+
+# Добавляем связи:
+>>> p1.postCategory.add(c1)
+>>> p2.postCategory.add(c1, c2)
+>>> p3.postCategory.add(c2)
+
+# Создаем комментарии:
+>>> Comment.objects.create(commentPost=Post.objects.get(pk=1), commentUser=User.objects.get(username='Mike'), text='comment text1')
+>>> Comment.objects.create(commentPost=Post.objects.get(pk=2), commentUser=User.objects.get(username='Mike'), text='comment text2')
+>>> Comment.objects.create(commentPost=Post.objects.get(pk=3), commentUser=User.objects.get(username='Sergo'), text='comment text3')
+
+# Вызываем (применяем) методы like, dislike к постам и комментариям:
+>>> Post.objects.get(pk=1).like()
+>>> Post.objects.get(pk=2).like()
+>>> Post.objects.get(pk=3).like()
+>>> Post.objects.get(pk=1).like()
+>>> Post.objects.get(pk=1).like()
+>>> Post.objects.get(pk=1).like()
+>>> Post.objects.get(pk=1).dislike() 
+
+>>> Comment.objects.get(pk=1).like()
+>>> Comment.objects.get(pk=2).like()
+>>> Comment.objects.get(pk=3).like()
+>>> Comment.objects.get(pk=1).like()
+>>> Comment.objects.get(pk=1).dislike()
+>>> Comment.objects.get(pk=1).like()
+
+
+# Обновляем рейтинг авторов:
+>>> Author.objects.get(authorUser=User.objects.get(username='Mike')).update_rating()
+>>> Author.objects.get(authorUser=User.objects.get(username='Sergo')).update_rating()
+
+# Выводим рейтинг пользователя Sergo:
+>>> a=Author.objects.get(authorUser=User.objects.get(username='Sergo')
+>>> a.ratingAuthor
+3
+
+# Выводим рейтинг пользователя Mike:
+>>> Author.objects.get(authorUser=User.objects.get(username='Mike')).ratingAuthor
+15
+
+
+# Выводим рейтинг лучшего пользователя:
+>>> best=Author.objects.all().order_by('-ratingAuthor').values('authorUser', 'ratingAuthor')[0]
+>>> print(best)
+{'authorUser' : 1, 'ratingAuthor': 15}
+
+
+
+
+
